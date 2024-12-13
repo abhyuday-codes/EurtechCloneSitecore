@@ -1,0 +1,231 @@
+﻿@model EurtechClone.Models.Header
+@using Sitecore.Resources.Media
+@using Sitecore.Mvc
+@using Sitecore.Data.Fields
+@using Sitecore.Data.Items
+
+<!-- CSS for Styling -->
+<style>
+    /* Logo and Header */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: #fff;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .header-logo img {
+        height: 50px;
+    }
+
+    .appointment-button {
+        background-color: white;
+        color: black;
+        text-decoration: none;
+        text-transform: uppercase;
+        padding: 10px 20px;
+        border: 2px solid #f2f2f2;
+        border-radius: 6px;
+        font-weight: bold;
+        font-family: Rubik, sans-serif;
+        position: relative; /* To position the :after pseudo-element relative to the button */
+        overflow: hidden; /* To prevent the :after pseudo-element from spilling outside */
+        transition: all 0.3s ease;
+    }
+
+        .appointment-button:after {
+            content: ''; /* Ensures the pseudo-element is displayed */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 300% 100%;
+            background-position: 100% 100%;
+            z-index: -1; /* Places it behind the button text */
+            transition: background-position 0.3s ease; /* Smooth transition for the gradient effect */
+            opacity: 0; /* Initially hidden */
+            visibility: hidden; /* Prevents it from being interactive */
+        }
+
+        .appointment-button:hover {
+            color: #fff;
+            border-color: transparent;
+            background-image: linear-gradient(90deg, #684cb1, #0ed5fa, #0ed5fa, #684cb1);
+        }
+
+            .appointment-button:hover:after {
+                background-position: 0% 0%; /* Shift the gradient to create a dynamic effect */
+                opacity: 1; /* Make the gradient visible */
+                visibility: visible;
+            }
+
+
+
+    /* Primary Menu */
+    .primary-menu {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        font-family: Rubik, sans-serif;
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+
+    .primary-menu-item {
+        position: relative;
+        margin-right: 20px;
+        font-size: 16px;
+    }
+
+        .primary-menu-item > a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            padding: 10px 15px;
+            display: inline-block;
+            transition: color 0.3s ease, background-color 0.3s ease;
+        }
+
+            .primary-menu-item > a:hover {
+                color: #007bff;
+                background-color: #e8f4ff; /* Softer hover background */
+                border-radius: 6px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            }
+
+    /* Secondary Menu */
+    .secondary-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: #ffffff;
+        box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15); /* Enhanced shadow for better depth */
+        border-radius: 6px; /* Slightly rounded corners */
+        padding: 10px 0;
+        list-style: none;
+        z-index: 1000;
+        width: 220px; /* Wider dropdown */
+        border-top: 4px solid #007bff; /* Custom upper border with width and color */
+    }
+
+        .secondary-menu li {
+            padding: 8px 20px; /* More space for better readability */
+            font-size: 15px; /* Slightly larger font for better visibility */
+        }
+
+            .secondary-menu li a {
+                text-decoration: none;
+                color: #333; /* Slightly darker color for better contrast */
+                display: block;
+                transition: color 0.3s ease, background-color 0.3s ease;
+            }
+
+                .secondary-menu li a:hover {
+                    color: #007bff;
+                    background-color: #f0f8ff; /* Subtle background highlight */
+                    border-radius: 4px;
+                }
+
+    /* Hover Behavior */
+    .primary-menu-item.has-dropdown:hover .secondary-menu {
+        display: block;
+    }
+</style>
+
+<!-- Dynamic Content -->
+<div class="header">
+    <!-- Logo -->
+    @if (Model != null && !string.IsNullOrEmpty(Model.imageUrl))
+    {
+        <div class="header-logo">
+            <img src="@Model.imageUrl" alt="Logo" />
+        </div>
+    }
+    <ul class="primary-menu">
+        @if (Model != null && Model.multilistItems != null)
+        {
+            MultilistField PrimaryMenuItems = Model.multilistItems;
+            Item[] items = PrimaryMenuItems.GetItems();
+
+            foreach (var item in items)
+            {
+                var linkField = (LinkField)item.Fields["Link"];
+                string Itemurl = null;
+                if (linkField != null)
+                {
+                    Itemurl = linkField.IsInternal
+                                ? Sitecore.Links.LinkManager.GetItemUrl(linkField.TargetItem)
+                                : linkField.Url;
+                }
+
+                var hasDropdown = item.Fields["SecondaryMenu"] != null &&
+                                  ((MultilistField)item.Fields["SecondaryMenu"]).Count > 0;
+
+                var dropdownClass = hasDropdown ? "has-dropdown" : "";
+
+                <li class="primary-menu-item @dropdownClass">
+                    <a href="@Itemurl" aria-haspopup="@hasDropdown" aria-expanded="false">@item.Fields["Title"]</a>
+
+                    @if (hasDropdown)
+                    {
+                        MultilistField SecondaryMenuItems = item.Fields["SecondaryMenu"];
+                        Item[] secondaryItems = SecondaryMenuItems.GetItems();
+
+                        <ul class="secondary-menu">
+                            @foreach (var secondary_item in secondaryItems)
+                            {
+                                var secondary_linkField = (LinkField)secondary_item.Fields["Link"];
+                                string secondary_Itemurl = null;
+                                if (secondary_linkField != null)
+                                {
+                                    secondary_Itemurl = secondary_linkField.IsInternal
+                                                        ? Sitecore.Links.LinkManager.GetItemUrl(secondary_linkField.TargetItem)
+                                                        : secondary_linkField.Url;
+                                }
+                                <li>
+                                    <a href="@secondary_Itemurl">@secondary_item.Fields["Title"]</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </li>
+            }
+        }
+    </ul>
+
+    <!-- Appointment Button -->
+    @if (Model != null && !string.IsNullOrEmpty(Model.Link))
+    {
+        <a href="@Model.Link" class="appointment-button">Get Appointment</a>
+    }
+</div>
+
+<!-- Navigation Menu -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const primaryMenuItems = document.querySelectorAll('.primary-menu-item.has-dropdown');
+
+        primaryMenuItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                const secondaryMenu = item.querySelector('.secondary-menu');
+                if (secondaryMenu) {
+                    secondaryMenu.style.display = 'block';
+                    item.querySelector('a').setAttribute('aria-expanded', 'true');
+                }
+            });
+
+            item.addEventListener('mouseleave', () => {
+                const secondaryMenu = item.querySelector('.secondary-menu');
+                if (secondaryMenu) {
+                    secondaryMenu.style.display = 'none';
+                    item.querySelector('a').setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+    });
+</script>

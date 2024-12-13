@@ -1,0 +1,147 @@
+﻿@model EurtechClone.Models.Footer
+@using Sitecore.Resources.Media
+@using Sitecore.Mvc
+@using Sitecore.Data.Fields
+@using Sitecore.Data.Items
+
+<style>
+    .container body-content {
+        background-color: #1a1e25;
+    }
+    .all-group {
+        background-color: #1a1e25;
+        padding: 3rem;
+        display: flex;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-gap: 2rem;
+    }
+    .eurtech-box {
+        display: flex;
+        margin: 1rem 5rem;
+        background-color: white;
+        padding: 2rem 3rem;
+        border-radius: 0.5rem;
+        justify-content: space-between;
+    }
+    .footer-box {
+        background-color: #f8f9fa;
+        padding: 20px;
+        text-align: center;
+    }
+
+        .footer-box img {
+            max-width: 150px;
+            height: auto;
+        }
+
+    p {
+        font-size: 14px;
+        color: #6c757d;
+        margin: 10px 0;
+    }
+
+    h4 {
+        font-size: 16px;
+        color: #343a40;
+        margin-top: 20px;
+    }
+
+    a {
+        display: block;
+        font-size: 14px;
+        color: #007bff;
+        text-decoration: none;
+        margin: 5px 0;
+    }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    .B-devs {
+        display: flex;
+        justify-content: center;
+        padding: 1rem 3rem;
+        font-weight: 700;
+    }
+</style>
+
+
+
+@if (Model != null)
+{
+    <div class="all-group">
+            @* Rich Text Groups *@
+            @{
+
+                MultilistField TextGroups = Model.multilistRichTextGroups;
+                Item[] textgroupitems = TextGroups.GetItems();
+
+                foreach (var item in textgroupitems)
+                {
+
+                    <p>@Html.Sitecore().Field("Field", item)</p>
+                }
+            }
+            @* Link Groups *@
+            @{
+
+                MultilistField LinkGroups = Model.multilistLinkGroups;
+                Item[] linkgroupitems = LinkGroups.GetItems();
+
+                foreach (var item in linkgroupitems)
+                {
+                    <div>
+                        @{
+                            <h4>@item.Fields["Title"]</h4>
+                            MultilistField links = item.Fields["Links"];
+                            Item[] linkitems = links.GetItems();
+                            foreach (var link in linkitems)
+                            {
+                                var Title = link.Fields["Title"];
+                                var linkField = (LinkField)link.Fields["Link"];
+                                string Itemurl = null;
+                                if (linkField != null)
+                                {
+                                    Itemurl = linkField.IsInternal ? Sitecore.Links.LinkManager.GetItemUrl(linkField.TargetItem)
+                                    : linkField.Url;
+                                }
+                                <a href="@Itemurl">@Title</a>
+                            }
+                        }
+                    </div>
+                }
+                    }
+
+            }
+    </div>
+    <div class="eurtech-box">
+        <div class="footer-box">
+            <img src="@Model.imageUrl" alt="Logo" />
+        </div>
+
+            @* Additional Links *@
+            @{
+
+                MultilistField Links = Model.Links;
+                Item[] linkItems = Links.GetItems();
+
+                foreach (var link in linkItems)
+                {
+                    var Title = link.Fields["Title"];
+                    var linkField = (LinkField)link.Fields["Link"];
+                    string Itemurl = null;
+                    if (linkField != null)
+                    {
+                        Itemurl = linkField.IsInternal ? Sitecore.Links.LinkManager.GetItemUrl(linkField.TargetItem)
+                        : linkField.Url;
+                    }
+                    <a href="@Itemurl">@Title</a>
+
+                }
+            }
+        </div>
+}
+
+<div class="B-devs">
+<p>@Html.Sitecore().Field("CopyrightText", Model.CopyrightText)</p>
+</div>

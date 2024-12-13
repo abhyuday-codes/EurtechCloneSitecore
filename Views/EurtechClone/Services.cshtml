@@ -1,0 +1,149 @@
+﻿@model EurtechClone.Models.Services
+@using Sitecore.Resources.Media
+@using Sitecore.Mvc
+@using Sitecore.Data.Fields
+@using Sitecore.Data.Items
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Cards</title>
+    <style>
+        /* Wrapper for all the cards */
+        .card-wrapper {
+            display: flex;
+            flex-wrap: wrap; /* Wrap cards if screen size is too small */
+            gap: 20px; /* Space between cards */
+            justify-content: center; /* Center all cards horizontally */
+            margin: 40px 0;
+        }
+
+        /* General card styling */
+        .card-container {
+            width: 250px; /* Adjust width to fit multiple cards */
+            background-color: #1e1e2d; /* Dark background color */
+            color: #fff; /* White text color */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            transition: transform 0.3s ease; /* Add hover effect */
+        }
+
+            .card-container:hover {
+                transform: translateY(-5px); /* Slight lift on hover */
+            }
+
+            /* Icon styling */
+            .card-container img {
+                width: 50px;
+                height: 50px;
+                margin-bottom: 15px;
+            }
+
+            /* Title styling */
+            .card-container h2 {
+                font-size: 18px;
+                font-weight: bold;
+                margin: 10px 0;
+            }
+
+            /* Description styling */
+            .card-container p {
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+
+            /* Link styling */
+            .card-container a {
+                display: inline-block;
+                font-size: 14px;
+                color: #57c7d4; /* Light blue color */
+                text-decoration: none;
+                border-bottom: 1px solid #57c7d4;
+                transition: color 0.3s ease, border-color 0.3s ease;
+            }
+
+                .card-container a:hover {
+                    color: #fff;
+                    border-color: #fff;
+                }
+
+        /* Header and button styling */
+        h6 {
+            color: #57c7d4;
+            text-transform: uppercase;
+            text-align: center;
+            margin: 0;
+        }
+
+        h1 {
+            color: black;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .services-button {
+            display: block;
+            width: 120px;
+            margin: 20px auto;
+            text-align: center;
+            background-color: #57c7d4;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+            .services-button:hover {
+                background-color: #1e1e2d;
+                color: #57c7d4;
+            }
+    </style>
+</head>
+<body>
+    @if (Model != null)
+    {
+        <h6>@Model.Text</h6>
+        <h1>@Model.Heading</h1>
+        <a href="@Model.Link" class="services-button">Services</a>
+
+        <div class="card-wrapper">
+
+            @{
+                MultilistField components = Model.ServiceComponents;
+                Item[] items = components.GetItems();
+                foreach (var item in items)
+                {
+                    <div class="card-container">
+                        @{
+                            var ImageField = (ImageField)item.Fields["Image"];
+                            string imageUrl = MediaManager.GetMediaUrl(ImageField.MediaItem);
+                        }
+                        <img src="@imageUrl" alt="Icon" />
+                        <h2>@item.Fields["Title"]</h2>
+                        <p>@item.Fields["Description"]</p>
+                        @{
+                            var linkField = (LinkField)item.Fields["Link"];
+                            string Itemurl = null;
+                            if (linkField != null)
+                            {
+                                Itemurl = linkField.IsInternal
+                                    ? Sitecore.Links.LinkManager.GetItemUrl(linkField.TargetItem)
+                                    : linkField.Url;
+                            }
+                        }
+                        <a href="@Itemurl">@item.Fields["LinkTitle"]</a>
+                    </div>
+                }
+            }
+
+        </div>
+    }
+</body>
+</html>

@@ -1,0 +1,170 @@
+﻿@model EurtechClone.Models.ITSolution
+@using Sitecore.Resources.Media
+@using Sitecore.Mvc
+@using Sitecore.Data.Fields
+@using Sitecore.Data.Items
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Solution</title>
+    <style>
+        /* Reset and body styles */
+        body {
+            margin: 0;
+            font-family: 'Rubik', sans-serif;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+
+        /* Background container */
+        .background-image {
+            background-image: url('@Model.imageUrl');
+            min-height: 810px;
+            position: relative;
+            align-items: center !important;
+            display: flex !important;
+        }
+
+        /* Darker overlay for background */
+
+        /* Content container */
+        .content {
+            flex: 0 0 auto;
+            width: 58.33%;
+            padding-right: 50px;
+            padding-left: 50px;
+        }
+
+        .content p {
+            font-weight: bold;
+            color: #777;
+            margin: 0 0 20px;
+            font-size: 18px;
+            opacity: 70%;
+            margin-bottom: 45px;
+            font-family: 'Rubik', sans-serif;
+        }
+
+            .content h2 {
+                line-height: 1.2;
+                font-size: 120px;
+                letter-spacing: -1px;
+                font-family: 'Rubik', sans-serif;
+                font-weight: 700;
+                margin-bottom: 0px;
+                color: black;
+                margin-top: 0;
+            }
+
+            .content span {
+                font-size: 20px;
+                color: #1F242C;
+                margin: 0px 0px 6px;
+                font-family: 'Rubik', sans-serif;
+                font-weight: 200;
+                opacity: 80%;
+            }
+
+        /* Button group styling */
+        .button-group {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .button-group a {
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .button-group a:first-child {
+                align-items: center;
+                font-size: 16px;
+                display: inline-flex;
+                font-weight: 600;
+                height: 40px;
+                border-radius: 6px;
+                color: white;
+                position: relative;
+                overflow: hidden;
+                text-transform: uppercase;
+                padding-left: 20px;
+                padding-right: 70px;
+                background-position: 100% 100%;
+                background-size: 300% 100%;
+                background-image: linear-gradient(90deg, #684cb1, #0ed5fa, #0ed5fa, #684cb1);
+            }
+
+        .button-group a:first-child:hover {
+            background-position: 0 100%;
+            color: white;
+        }
+
+            .button-group a:nth-child(2) {
+                margin-right: -30px;
+            }
+
+        .button-group a:nth-child(3) {
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: black;
+            cursor: pointer;
+        }
+
+        .button-group a:nth-child(3):hover {
+            color: lightskyblue;
+        }
+
+        /* Styling for icon inside button */
+            .button-group .play-icon {
+                position: relative;
+                background: #fff;
+                box-shadow: 0 16px 32px 0 rgba(0,0,0,.1);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 60px;
+                height: 60px;
+                z-index: 1;
+                animation: pulseBig 5s linear infinite;
+                transition: all 0.3s ease-out 0s;
+                cursor: pointer;
+            }
+
+        .button-group .play-icon:hover {
+            background-color: lightskyblue;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-image">
+       
+        <div class="content">
+            <span>@Model.Text</span>
+            <h2>@Model.Heading</h2>
+            <p>@Model.SubText</p>
+
+            <!-- Buttons -->
+            <div class="button-group">
+                <a href="@Model.linkUrl">Get Started</a>
+                <a href="@Model.VideolinkUrl">
+                    <span class="play-icon">►</span>
+                </a>
+                <a href="@Model.MedialinkUrl">Intro Video</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
